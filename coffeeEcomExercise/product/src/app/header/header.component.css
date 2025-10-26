@@ -1,22 +1,131 @@
-.header{
-    width:1601px; 
-    height:68px;
-    background-image: url("../../assets/header.png");
+.main-header {
+  background-color: #4a3f35; 
+  padding: 15px 0; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: 100%; 
 }
 
-.button1{
-    width:100px; 
-    height:40px;
-    background-image: url("../../assets/btn1.png");    
-    color:rgb(61, 9, 26) ;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-weight: bold;
-    border-radius: 8px;
+.header-content {
+  max-width: 1200px; 
+  margin: 0 auto;
+  padding: 0 20px; 
+  display: flex;
+  align-items: center; 
+  justify-content: space-between; 
+  flex-wrap: wrap; 
 }
-.phrase{
-    width: 500px;
-    font-size: large;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    text-align: start;
-    color: rgb(188, 19, 194);
+
+.logo-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.logo-image {
+  height: 40px; 
+  width: auto;
+  margin-right: 10px; 
+}
+
+.logo-text {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #fff; 
+}
+
+.tagline {
+  color: #c5b8ad;
+  font-size: 0.9em;
+  margin: 0 15px; 
+  @media (max-width: 768px) {
+    display: none; 
+  }
+}
+
+.main-nav {
+  margin-left: auto; 
+}
+
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.main-nav li {
+  margin-left: 25px; 
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #f0e9e4; 
+  font-weight: 500;
+  font-size: 1em;
+  padding: 5px 0; 
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.main-nav a:hover {
+  color: #ffffff; 
+}
+
+.main-nav a.active-link {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: -2px; 
+  left: 0;
+  background-color: #ffffff;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.main-nav a:hover::after,
+.main-nav a.active-link::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+
+@media (max-width: 768px) {
+  .header-content {
+    justify-content: center; 
+    flex-direction: column; 
+  }
+  .main-nav {
+    margin-left: 0; 
+    margin-top: 15px;
+    width: 100%; 
+    justify-content: center; 
+  }
+   .main-nav ul {
+    justify-content: center; 
+  }
+  .main-nav li {
+     margin: 0 15px; 
+  }
+}
+
+@media (max-width: 480px) {
+    .main-nav li {
+     margin: 0 10px; 
+  }
+   .main-nav a {
+     font-size: 0.9em; 
+   }
+   .logo-image {
+     height: 35px;
+   }
+   .logo-text {
+     font-size: 1.3em;
+   }
 }

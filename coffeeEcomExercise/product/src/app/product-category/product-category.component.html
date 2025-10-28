@@ -1,32 +1,66 @@
-<div class="container-fluid hero-contact p-0 m-0">
-  <h2>eCommerce</h2>
-      <div *ngFor="let category of this.productsCategory" class="col-md-4 newspaper">
-          <div>{{category.categoryName}}</div>
-            <div  class="box" *ngFor="let prod of this.category.products" >
-            <img class="productimg" src="../assets/products/{{prod.imageFile}}.jpg"/>
-            <p class="productname">{{prod.name}}</p>
-            <p class="productcategory">{{prod.description}}</p> 
-            <p class="productcategory">{{prod.categoryName}}</p> 
-            <p class="productcategory">{{prod.unitOfMeasure}}</p> 
-            <p class="productcategory">{{prod.price}}</p>        
-            <img  routerLink="/cart" class="cart" src="../assets/icons/shoppingcart.svg" />
-            </div>
+<div class="product-page-container">
+
+  <div class="page-header">
+    <h1>The Gear We Trust</h1>
+    <p>Browse our meticulously curated selection of essential tools for the dedicated home barista.</p>
+  </div>
+
+  <div class="control-panel">
+    <div class="search-bar">
+      <input type="text"
+             placeholder="Search by name or description..."
+             class="search-input"
+             [(ngModel)]="searchTerm">
+    </div>
+
+    <div class="filter-controls">
+      <label for="category-filter">Filter by Category:</label>
+      <select id="category-filter" class="filter-select" [(ngModel)]="selectedCategory">
+        <option value="">All Categories</option>
+        <option *ngFor="let category of categoriesForFilter" [value]="category.categoryName">{{ category.categoryName }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="filteredProductsCategory.length === 0 && allProductsCategory.length > 0" class="no-results">
+      <p>No products match your current search or filter criteria.</p>
+  </div>
+
+
+  <div *ngFor="let category of filteredProductsCategory" class="category-section">
+
+    <h2 class="category-title">{{ category.categoryName }}</h2>
+    <hr>
+
+    <div class="product-grid">
+
+      <div *ngFor="let prod of category.products" class="product-card">
+
+        <img class="product-image"
+             [src]="'assets/products/' + prod.imageFile + '.jpg'"
+             [alt]="prod.name"
+             onerror="this.src='https://placehold.co/200x180/4a3f35/F8F6F4?text=No+Image'">
+
+        <div class="product-info">
+          <h3 class="product-name">{{ prod.name | titlecase }}</h3>
+          <p class="product-description">{{ prod.description }}</p>
+          <p class="product-category">Category: {{ prod.categoryName }}</p>
+          <p class="product-unit">Unit: {{ prod.unitOfMeasure }}</p>
+          
+
+          <div class="product-footer">
+            <span class="product-price">{{ prod.price | currency:'₱' }}</span>
+
+            <button class="add-to-cart-btn" routerLink="/cart">
+              <img class="cart-icon" src="assets/icons/shoppingcart.svg" alt="Cart">
+            </button>
+          </div>
+
+        </div>
       </div>
-<!--    <table class="table">
-      <div *ngFor="let category of this.productsCategory" class="col-md-4">
-        <tr >
-          <h2>{{category.categoryName}}</h2>
-        </tr >
-        <tr >
-            <td *ngFor="let prod of this.category.products" class="col-md-4">
-            <img class="productimg" src="../assets/products/{{prod.imageFile}}.jpg"/>
-            <p class="productname">{{prod.name}}</p>
-            <p class="productcategory">{{prod.description}}</p> 
-            <p class="productcategory">{{prod.categoryName}}</p> 
-            <p class="productcategory">{{prod.unitOfMeasure}}</p> 
-            <p class="productcategory">{{prod.price}}</p>        
-            <img  routerLink="/cart" class="cart" src="../assets/icons/shoppingcart.svg" />
-          </td>
-        </tr>
-      </div>
-    </table>-->
+
+    </div>
+  </div>
+
+</div>
+

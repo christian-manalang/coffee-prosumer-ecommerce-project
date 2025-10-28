@@ -1,37 +1,52 @@
-<!DOCTYPE html>
-<html>
-<head>
-<style> 
-#main {
-  height: 100px;
-  border: 1px solid black; 
-  display: flex;
-  align-items: baseline;
-}
+<div class="customer-support-container">
 
-#main div {
-  flex: 1;
-  border: 1px solid black;
-  display: flex;
-  align-items: center;
-}
-</style>
-</head>
-<body>
-
-<h1>The align-items Property</h1>
-
-<div id="main">
-  <div style="background-color:coral;min-height:100px;max-width:100px;">RED</div>
-  <div style="background-color:lightblue;min-height:100px;max-width:100px;">BLUE</div>  
-  <div style="background-color:lightgreen;min-height:100px;max-width:100px;">Green </div>
-  <div style="background-color:lightgreen;min-height:100px;max-width:100px;">Green </div>
-</div>
-<div id="main">
-    <div style="background-color:coral;min-height:100px;max-width:100px;">RED</div>
-    <div style="background-color:lightblue;min-height:100px;max-width:100px;">BLUE</div>  
-    <div style="background-color:lightgreen;min-height:100px;max-width:100px;">Green </div>    
+  <div class="page-header">
+    <h1>Customer Support</h1>
+    <p>We're here to help with any questions about your order or our products.</p>
   </div>
-  
-</body>
-</html>
+
+  <div class="support-content content-section">
+
+    <div class="support-section">
+      <h2>Frequently Asked Questions & Quick Help</h2>
+      <div class="quick-links">
+        <div class="link-card">
+          <h3>Order Tracking</h3>
+          <p>Find out where your package is.</p>
+          <a routerLink="/orders" class="action-button">Track My Order</a> <!-- Link to orders page -->
+        </div>
+        <div class="link-card">
+          <h3>Shipping Information</h3>
+          <p>Learn about our shipping rates and timelines.</p>
+          <a routerLink="/shipping-info" class="action-button disabled">View Shipping Policy (TBD)</a> <!-- Placeholder link -->
+        </div>
+        <div class="link-card">
+          <h3>Returns & Exchanges</h3>
+          <p>Need to return an item? Read our policy.</p>
+          <a routerLink="/returns-policy" class="action-button disabled">View Returns Policy (TBD)</a> <!-- Placeholder link -->
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="support-section">
+      <h2>Need More Help?</h2>
+      <p>If you can't find the answer above, please reach out to us directly:</p>
+      <div class="contact-methods">
+        <div class="method">
+          <h3>Email Us</h3>
+          <p>Send your questions to <a href="mailto:support@prosumerbrew.example">support@prosumerbrew.example</a>. We typically respond within 24 business hours.</p>
+        </div>
+        <div class="method">
+          <h3>Call Us</h3>
+          <p>Reach our support team at <a href="tel:+63281234567">+63 (2) 8123-4567</a> during business hours (9 AM - 5 PM PHT, Mon-Fri).</p>
+        </div>
+      </div>
+      <p class="contact-page-link">You can also use our <a routerLink="/contact">Contact Form</a>.</p>
+    </div>
+
+  </div>
+
+</div>
+

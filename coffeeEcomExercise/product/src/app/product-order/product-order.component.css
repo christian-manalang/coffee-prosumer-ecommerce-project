@@ -1,0 +1,182 @@
+.checkout-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+h1 {
+    text-align: center;
+    color: #4a3f35;
+    margin-bottom: 30px;
+}
+
+.checkout-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.form-column {
+    flex: 2; 
+    min-width: 300px;
+}
+
+.summary-column {
+    flex: 1; 
+    min-width: 280px;
+}
+
+.form-section {
+    background-color: #f8f6f4;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-section h2 {
+    color: #4a3f35;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0d8d3;
+}
+
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-field label {
+    display: block;
+    font-weight: bold;
+    color: #6a5e53;
+    margin-bottom: 5px;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+.form-field input:focus {
+    border-color: #a38d7b;
+    outline: none;
+    box-shadow: 0 0 5px rgba(163, 141, 123, 0.5);
+}
+
+.validation-error {
+    color: #c0392b;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.form-field input.ng-invalid.ng-touched {
+    border-color: #c0392b;
+}
+
+.form-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.btn-primary {
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.2s;
+    background-color: #a38d7b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.btn-primary:hover {
+    background-color: #8a7360;
+}
+
+.btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.summary-box {
+    background-color: #f8f6f4;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e0d8d3;
+}
+
+.summary-box h2 {
+    color: #4a3f35;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0d8d3;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    color: #6a5e53;
+}
+
+.summary-item.total {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #4a3f35;
+    margin-top: 10px;
+}
+
+.summary-note {
+    font-size: 0.9em;
+    color: #888;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: #a38d7b;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.success-message {
+    text-align: center;
+    padding: 60px 30px;
+    background-color: #f8f6f4;
+    border-radius: 8px;
+    border: 1px solid #a38d7b;
+}
+
+.success-message h2 {
+    color: #4a3f35;
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+.success-message p {
+    font-size: 1.2em;
+    color: #6a5e53;
+    line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+    .checkout-layout {
+        flex-direction: column-reverse;
+    }
+}

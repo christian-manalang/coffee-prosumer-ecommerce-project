@@ -33,7 +33,6 @@
     <hr>
 
     <div class="product-grid">
-
       <div *ngFor="let prod of category.products" class="product-card">
 
         <img class="product-image"
@@ -47,11 +46,10 @@
           <p class="product-category">Category: {{ prod.categoryName }}</p>
           <p class="product-unit">Unit: {{ prod.unitOfMeasure }}</p>
           
-
           <div class="product-footer">
             <span class="product-price">{{ prod.price | currency:'₱' }}</span>
 
-            <button class="add-to-cart-btn" routerLink="/cart">
+            <button class="add-to-cart-btn" (click)="addToCart(prod)">
               <img class="cart-icon" src="assets/icons/shoppingcart.svg" alt="Cart">
             </button>
           </div>

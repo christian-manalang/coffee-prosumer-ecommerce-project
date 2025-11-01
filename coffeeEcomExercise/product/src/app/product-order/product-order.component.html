@@ -1,1 +1,62 @@
-<p>product-order works!</p>
+<div class="checkout-container" *ngIf="!isOrderPlaced">
+  <h1>Checkout</h1>
+
+  <div class="checkout-grid">
+    
+    <div class="form-section">
+      <h2 class="section-title">Customer Information</h2>
+      
+      <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+        
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" type="text" formControlName="fullName" class="form-control">
+          
+          <div *ngIf="fullName?.invalid && (fullName?.dirty || fullName?.touched)" class="validation-error">
+            <div *ngIf="fullName?.errors?.['required']">
+              Full Name is required.
+            </div>
+            <div *ngIf="fullName?.errors?.['minlength']">
+              Full Name must be at least 2 characters long.
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn-submit" [disabled]="checkoutForm.invalid">
+            Place Order
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="summary-section">
+      <h2 class="section-title">Order Summary</h2>
+      
+      <div class="summary-item">
+        <span>Total Quantity:</span>
+        <span>{{ totalQuantity }}</span>
+      </div>
+      
+      <div class="summary-item total-price">
+        <span>Total Price:</span>
+        <span>{{ totalPrice | currency:'₱' }}</span>
+      </div>
+      
+      <p class="summary-note">
+        Shipping and taxes will be calculated at the next step (or are included, etc.).
+      </p>
+
+      <a routerLink="/cart" class="back-link">&laquo; Back to Cart</a>
+    </div>
+
+  </div>
+</div>
+
+<div *ngIf="isOrderPlaced" class="thank-you-message">
+  <h2>Thank you for your order!</h2>
+  <p>Your order has been received and is being processed.</p>
+  <p>You will be redirected to the home page shortly.</p>
+</div>
+

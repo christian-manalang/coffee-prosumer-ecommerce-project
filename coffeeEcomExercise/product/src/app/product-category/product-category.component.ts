@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductCategory } from '../model/product-category';
 import { ProductService } from '../service/product.service';
+import { Product } from '../model/product';
+import { CartService } from '../service/cart.service';
 
 @Component({
   selector: 'app-product-category',
@@ -15,7 +17,10 @@ export class ProductCategoryComponent implements OnInit {
 
   public categoriesForFilter: ProductCategory[] = [];
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private cartService: CartService 
+  ) {}
 
   ngOnInit(): void {
     console.log("ngOnInit called");
@@ -26,9 +31,14 @@ export class ProductCategoryComponent implements OnInit {
     });
   }
 
+  addToCart(product: Product) {
+    console.log(`Adding to cart: ${product.name}, ${product.price}`);
+    this.cartService.addToCart(product);
+  }
+
   get filteredProductsCategory(): ProductCategory[] {
     if (!this.allProductsCategory) {
-      return []; // Return empty array if data hasn't loaded yet
+      return []; 
     }
 
     let filteredList = this.allProductsCategory;
@@ -44,6 +54,7 @@ export class ProductCategoryComponent implements OnInit {
       if (lowerSearchTerm === '') {
          return filteredList;
       }
+      
       filteredList = filteredList.map(category => {
         const filteredProducts = category.products.filter(product =>
           product.name.toLowerCase().includes(lowerSearchTerm) ||
@@ -60,6 +71,5 @@ export class ProductCategoryComponent implements OnInit {
 
     return filteredList;
   }
-
 }
 

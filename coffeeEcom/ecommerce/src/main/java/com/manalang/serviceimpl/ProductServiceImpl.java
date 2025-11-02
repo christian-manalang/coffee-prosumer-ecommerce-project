@@ -1,151 +1,142 @@
 package com.manalang.serviceimpl;
 
+import com.manalang.entity.CategoryData;
 import com.manalang.entity.ProductData;
 import com.manalang.model.Product;
 import com.manalang.model.ProductCategory;
+import com.manalang.repository.CategoryDataRepository;
 import com.manalang.repository.ProductDataRepository;
 import com.manalang.service.ProductService;
-import com.manalang.util.Transform;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
-    ProductDataRepository productDataRepository;
+    private ProductDataRepository productDataRepository;
 
-    Transform< ProductData, Product> transformProductData = new Transform<>(Product.class);
+    @Autowired
+    private CategoryDataRepository categoryDataRepository; 
 
-    Transform<Product, ProductData> transformProduct = new Transform<>(ProductData.class);
-
-
-    public List<Product> getAllProducts() {
-        List<ProductData>productDataRecords = new ArrayList<>();
-        List<Product> products =  new ArrayList<>();
-
-        productDataRepository.findAll().forEach(productDataRecords::add);
-        Iterator<ProductData> it = productDataRecords.iterator();
-
-        while(it.hasNext()) {
-            Product product = new Product();
-            ProductData productData = it.next();
-            product = transformProductData.transform(productData);
-            products.add(product);
-        }
-        return products;
-    }
-    @Override
-    public List<ProductCategory> listProductCategories()
-    {
-        Map<String,List<Product>> mappedProduct = getCategoryMappedProducts();
-        List<ProductCategory> productCategories = new ArrayList<>();
-        for(String categoryName: mappedProduct.keySet()){
-            ProductCategory productCategory =  new ProductCategory();
-            productCategory.setCategoryName(categoryName);
-            productCategory.setProducts(mappedProduct.get(categoryName));
-            productCategories.add(productCategory);
-        }
-        return productCategories;
-    }
-    @Override
-    public Map<String,List<Product>> getCategoryMappedProducts()
-    {
-        Map<String,List<Product>> mapProducts = new HashMap<String,List<Product>>();
-
-        List<ProductData>productDataRecords = new ArrayList<>();
-        List<Product> products;
-
-        productDataRepository.findAll().forEach(productDataRecords::add);
-        Iterator<ProductData> it = productDataRecords.iterator();
-
-        while(it.hasNext()) {
-            Product product = new Product();
-            ProductData productData = it.next();
-
-            if(mapProducts.containsKey(productData.getCategoryName())){
-                products = mapProducts.get(productData.getCategoryName());
-            }
-            else {
-                products = new ArrayList<Product>();
-                mapProducts.put(productData.getCategoryName(), products);
-            }
-            product = transformProductData.transform(productData);
-            products.add(product);
-        }
-        return mapProducts;
-    }
-
-    @Override
-    public Product[] getAll() {
-            List<ProductData> productsData = new ArrayList<>();
-            List<Product> products = new ArrayList<>();
-            productDataRepository.findAll().forEach(productsData::add);
-            Iterator<ProductData> it = productsData.iterator();
-            while(it.hasNext()) {
-                ProductData productData = it.next();
-                Product product =  transformProductData.transform(productData);
-                products.add(product);
-            }
-            Product[] array = new Product[products.size()];
-            for  (int i=0; i<products.size(); i++){
-                array[i] = products.get(i);
-            }
-            return array;
-        }
-    @Override
-    public Product get(Integer id) {
-        log.info(" Input id >> "+  Integer.toString(id) );
-        Product product = null;
-        Optional<ProductData> optional = productDataRepository.findById(id);
-        if(optional.isPresent()) {
-            log.info(" Is present >> ");
-            product = new Product();
-            product.setId(optional.get().getId());
-            product.setName(optional.get().getName());
-        }
-        else {
-            log.info(" Failed >> unable to locate id: " +  Integer.toString(id)  );
-        }
-        return product;
-    }
-        @Override
-        public Product create(Product product) {
-            log.info(" add:Input " + product.toString());
-            ProductData productData = transformProduct.transform(product);
-            ProductData updatedProductData = productDataRepository.save(productData);
-            log.info(" add:Input {}", productData.toString());
-            return  transformProductData.transform(updatedProductData);
-        }
-
-        @Override
-        public Product update(Product product) {
-            Optional<ProductData> optional  = productDataRepository.findById(product.getId());
-            if(optional.isPresent()){
-                ProductData productData = transformProduct.transform(product);
-                ProductData updaatedProductData = productDataRepository.save( productData);
-                return transformProductData.transform(updaatedProductData);
-            }
-            else {
-                log.error("Product record with id: {} do not exist",product.getId());
-            }
+    private Product translateProductEntityToDTO(ProductData entity) {
+        if (entity == null) {
             return null;
         }
-    @Override
-    public void delete(Integer id) {
-        log.info(" Input >> {}",id);
-        Optional<ProductData> optional = productDataRepository.findById(id);
-        if( optional.isPresent()) {
-            ProductData productDatum = optional.get();
-            productDataRepository.delete(optional.get());
-            log.info(" Successfully deleted Product record with id: {}",id);
+        Product dto = new Product();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setDescription(entity.getDescription());
+        dto.setImageFile(entity.getImageFile());
+        dto.setUnitOfMeasure(entity.getUnitOfMeasure());
+
+        if (entity.getPrice() != null) {
+            dto.setPrice(entity.getPrice().toString());
         }
-        else {
-            log.error(" Unable to locate product with id: {}", id);
+
+        if (entity.getCategory() != null) {
+            dto.setCategoryName(entity.getCategory().getName());
+        }
+        return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductCategory> listProductCategories() {
+        log.info("Fetching all products, grouped by category.");
+        
+        Iterable<CategoryData> categoryEntities = categoryDataRepository.findAll();
+        List<ProductCategory> productCategoryDTOs = new ArrayList<>();
+
+        for (CategoryData categoryEntity : categoryEntities) {
+            ProductCategory categoryDTO = new ProductCategory();
+            categoryDTO.setCategoryName(categoryEntity.getName());
+
+            List<Product> productDTOs = categoryEntity.getProducts().stream()
+                    .map(this::translateProductEntityToDTO) 
+                    .collect(Collectors.toList());
+            
+            categoryDTO.setProducts(productDTOs);
+            productCategoryDTOs.add(categoryDTO);
+        }
+        return productCategoryDTOs;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Product get(Integer id) {
+        log.info("Fetching product by id: {}", id);
+        return productDataRepository.findById(id)
+                .map(this::translateProductEntityToDTO) 
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+    }
+
+    @Override
+    @Transactional
+    public Product create(Product productDTO) {
+        log.info("Creating new product: {}", productDTO.getName());
+        
+        ProductData entity = new ProductData();
+        
+        CategoryData category = categoryDataRepository.findByName(productDTO.getCategoryName())
+                .orElseThrow(() -> new RuntimeException("Category not found: " + productDTO.getCategoryName()));
+        
+        entity.setCategory(category);
+        entity.setName(productDTO.getName());
+        entity.setDescription(productDTO.getDescription());
+        entity.setImageFile(productDTO.getImageFile());
+        entity.setUnitOfMeasure(productDTO.getUnitOfMeasure());
+        
+        if (productDTO.getPrice() != null && !productDTO.getPrice().isEmpty()) {
+            entity.setPrice(new BigDecimal(productDTO.getPrice()));
+        }
+
+        ProductData savedEntity = productDataRepository.save(entity);
+        
+        return translateProductEntityToDTO(savedEntity);
+    }
+
+    @Override
+    @Transactional
+    public Product update(Product productDTO) {
+        log.info("Updating product id: {}", productDTO.getId());
+        
+        ProductData entity = productDataRepository.findById(productDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productDTO.getId()));
+        
+        CategoryData category = categoryDataRepository.findByName(productDTO.getCategoryName())
+                .orElseThrow(() -> new RuntimeException("Category not found: " + productDTO.getCategoryName()));
+
+        entity.setCategory(category);
+        entity.setName(productDTO.getName());
+        entity.setDescription(productDTO.getDescription());
+        entity.setImageFile(productDTO.getImageFile());
+        entity.setUnitOfMeasure(productDTO.getUnitOfMeasure());
+        if (productDTO.getPrice() != null && !productDTO.getPrice().isEmpty()) {
+            entity.setPrice(new BigDecimal(productDTO.getPrice()));
+        }
+        
+        ProductData savedEntity = productDataRepository.save(entity);
+        return translateProductEntityToDTO(savedEntity);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Integer id) {
+        log.info("Deleting product id: {}", id);
+        if (productDataRepository.existsById(id)) {
+            productDataRepository.deleteById(id);
+        } else {
+            log.warn("Could not delete. Product not found with id: {}", id);
         }
     }
 }
+

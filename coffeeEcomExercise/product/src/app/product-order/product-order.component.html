@@ -9,23 +9,71 @@
           <h2>Customer Information</h2>
           
           <div class="form-field">
-            <label for="fullName">Full Name</label>
-            <input id="fullName" type="text" formControlName="fullName">
+            <label for="firstname">First Name</label>
+            <input id="firstname" type="text" formControlName="firstname"
+                   [ngClass]="{ 'is-invalid': firstname?.invalid && (firstname?.dirty || firstname?.touched) }">
             
-            <div *ngIf="fullName?.invalid && (fullName?.dirty || fullName?.touched)" class="validation-error">
-              <div *ngIf="fullName?.errors?.['required']">
-                Full Name is required.
+            <div *ngIf="firstname?.invalid && (firstname?.dirty || firstname?.touched)" class="validation-error">
+              <div *ngIf="firstname?.errors?.['required']">
+                First Name is required.
               </div>
-              <div *ngIf="fullName?.errors?.['minlength']">
-                Full Name must be at least 2 characters long.
+              <div *ngIf="firstname?.errors?.['minlength']">
+                First Name must be at least 2 characters long.
               </div>
             </div>
           </div>
+
+          <div class="form-field">
+            <label for="middlename">Middle Name (Optional)</label>
+            <input id="middlename" type="text" formControlName="middlename">
+          </div>
           
+          <div class="form-field">
+            <label for="lastname">Last Name</label>
+            <input id="lastname" type="text" formControlName="lastname"
+                   [ngClass]="{ 'is-invalid': lastname?.invalid && (lastname?.dirty || lastname?.touched) }">
+            
+            <div *ngIf="lastname?.invalid && (lastname?.dirty || lastname?.touched)" class="validation-error">
+              <div *ngIf="lastname?.errors?.['required']">
+                Last Name is required.
+              </div>
+              <div *ngIf="lastname?.errors?.['minlength']">
+                Last Name must be at least 2 characters long.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="dateOfBirth">Date of Birth</label>
+            <input id="dateOfBirth" type="date" formControlName="dateOfBirth"
+                   [ngClass]="{ 'is-invalid': dateOfBirth?.invalid && (dateOfBirth?.dirty || dateOfBirth?.touched) }">
+            
+            <div *ngIf="dateOfBirth?.invalid && (dateOfBirth?.dirty || dateOfBirth?.touched)" class="validation-error">
+              <div *ngIf="dateOfBirth?.errors?.['required']">
+                Date of Birth is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="gender">Gender</label>
+            <select id="gender" formControlName="gender"
+                    [ngClass]="{ 'is-invalid': gender?.invalid && (gender?.dirty || gender?.touched) }">
+              <option value="" disabled>Select a gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="PreferNotToSay">Prefer not to say</option>
+            </select>
+            
+            <div *ngIf="gender?.invalid && (gender?.dirty || gender?.touched)" class="validation-error">
+              <div *ngIf="gender?.errors?.['required']">
+                Please select a gender.
+              </div>
+            </div>
+          </div>
 
         </div>
-
-        
       </div>
 
       <div class="summary-column">

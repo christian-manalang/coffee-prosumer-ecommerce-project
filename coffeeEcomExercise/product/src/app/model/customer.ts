@@ -1,6 +1,9 @@
 export class Customer {
-    id: number = 0; 
-    firstName: string = '';
-    lastName: string = '';
-    email: string = '';
+  id: number = 0;
+  firstname: string = '';  
+  middlename: string = ''; 
+  lastname: string = '';   
+  dateOfBirth: Date | null = null; 
+  gender: string = '';     
 }
+

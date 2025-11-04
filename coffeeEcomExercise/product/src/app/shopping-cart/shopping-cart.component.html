@@ -1,12 +1,12 @@
 <div class="cart-container">
   <h1>Your Shopping Cart</h1>
 
-  <div *ngIf="cartItems.length === 0" class="empty-cart">
+  <div *ngIf="!(cartItems$ | async) || (cartItems$ | async)?.length === 0" class="empty-cart">
     <p>Your cart is currently empty.</p>
     <a routerLink="/product" class="btn btn-primary">Continue Shopping</a>
   </div>
 
-  <div *ngIf="cartItems.length > 0">
+  <div *ngIf="(cartItems$ | async) as cartItems">
     <table class="cart-table">
       <thead>
         <tr>
@@ -50,8 +50,8 @@
 
     <div class="cart-summary">
       <div class="totals">
-        <p><strong>Total Quantity:</strong> {{ totalQuantity }}</p>
-        <p><strong>Total Price:</strong> {{ totalPrice | currency:'₱' }}</p>
+        <p><strong>Total Quantity:</strong> {{ totalQuantity$ | async }}</p>
+        <p><strong>Total Price:</strong> {{ (totalPrice$ | async) | currency:'₱' }}</p>
       </div>
       <div class="checkout-actions">
         <a routerLink="/product" class="btn btn-secondary">Continue Shopping</a>

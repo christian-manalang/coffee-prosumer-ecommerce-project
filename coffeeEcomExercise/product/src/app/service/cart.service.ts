@@ -8,77 +8,118 @@ import { Product } from '../model/product';
 })
 export class CartService {
 
-  cartItems: CartItem[] = [];
-  
-  totalPrice: Subject<number> = new BehaviorSubject<number>(0);
-  totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
+  // --- Reactive State ---
+  // We use BehaviorSubject to hold the current list of items
+  // and make it available as an observable to any component.
+  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
+  public items$ = this.cartItemsSubject.asObservable(); // The '$' indicates an observable
 
-  constructor() { }
+  // We use BehaviorSubject for totals as well
+  public totalPrice$ = new BehaviorSubject<number>(0);
+  public totalQuantity$ = new BehaviorSubject<number>(0);
 
+  constructor() {
+    // Load cart from local storage on startup, if it exists
+    const storedItems = localStorage.getItem('cartItems');
+    if (storedItems) {
+      const items: CartItem[] = JSON.parse(storedItems);
+      this.cartItemsSubject.next(items);
+      this.computeCartTotals(items);
+    }
+  }
+
+  /**
+   * Main logic to add a product to the cart.
+   * If the item already exists, it increments the quantity.
+   */
   addToCart(product: Product) {
-    console.log(`Adding to cart: ${product.name}`);
+    const currentItems = this.cartItemsSubject.getValue();
+    let alreadyExists = false;
     
-    let alreadyInCart: boolean = false;
-    let existingCartItem: CartItem | undefined = undefined;
-
-    if (this.cartItems.length > 0) {
-      existingCartItem = this.cartItems.find(item => item.id === product.id); 
-      alreadyInCart = (existingCartItem !== undefined);
+    // Check if item already in cart
+    for (let item of currentItems) {
+      if (item.id === product.id) {
+        item.quantity++;
+        alreadyExists = true;
+        break;
+      }
     }
 
-    if (alreadyInCart) {
-      existingCartItem!.quantity++;
-    } else {
-      this.cartItems.push(new CartItem(product));
+    // If not, create a new CartItem and add it to the array
+    if (!alreadyExists) {
+      currentItems.push(new CartItem(product));
     }
 
-    this.computeCartTotals();
+    // Notify all subscribers (like the cart page) of the changes
+    this.notifySubscribers(currentItems);
   }
 
-  computeCartTotals() {
-    let totalPriceValue: number = 0;
-    let totalQuantityValue: number = 0;
-
-    for (let currentItem of this.cartItems) {
-      totalPriceValue += currentItem.quantity * currentItem.unitPrice;
-      totalQuantityValue += currentItem.quantity;
-    }
-
-    this.totalPrice.next(totalPriceValue);
-    this.totalQuantity.next(totalQuantityValue);
-  }
-
-  getItems(): CartItem[] {
-    return this.cartItems;
-  }
-
-  removeItem(cartItem: CartItem) {
-    const itemIndex = this.cartItems.findIndex(item => item.id === cartItem.id);
-
-    if (itemIndex > -1) {
-      this.cartItems.splice(itemIndex, 1);
-      this.computeCartTotals();
-    }
-  }
-
+  /**
+   * Decrements the quantity of an item.
+   */
   decrementQuantity(cartItem: CartItem) {
-    cartItem.quantity--;
-
-    if (cartItem.quantity === 0) {
-      this.removeItem(cartItem);
-    } else {
-      this.computeCartTotals();
+    const currentItems = this.cartItemsSubject.getValue();
+    for (let item of currentItems) {
+      if (item.id === cartItem.id && item.quantity > 1) {
+        item.quantity--;
+        this.notifySubscribers(currentItems);
+        return; // Exit loop
+      }
     }
   }
 
-  incrementQuantity(cartItem: CartItem) {
-    cartItem.quantity++;
-    this.computeCartTotals();
+  /**
+   * Removes an item from the cart entirely.
+   */
+  removeFromCart(cartItem: CartItem) {
+    let currentItems = this.cartItemsSubject.getValue();
+    currentItems = currentItems.filter(item => item.id !== cartItem.id);
+    this.notifySubscribers(currentItems);
   }
 
+  /**
+   * Gets the current raw array of items (for checkout).
+   */
+  getCartItems(): CartItem[] {
+    return this.cartItemsSubject.getValue();
+  }
+
+  /**
+   * Empties the cart after a successful order.
+   */
   clearCart() {
-    this.cartItems = [];
-    this.computeCartTotals();
+    this.notifySubscribers([]);
+  }
+
+  /**
+   * Helper function to update all observables and local storage.
+   */
+  private notifySubscribers(items: CartItem[]) {
+    // 1. Calculate new totals
+    const { total, quantity } = this.computeCartTotals(items);
+
+    // 2. Notify all subscribers
+    this.cartItemsSubject.next(items);
+    this.totalPrice$.next(total);
+    this.totalQuantity$.next(quantity);
+    
+    // 3. Persist to local storage
+    localStorage.setItem('cartItems', JSON.stringify(items));
+  }
+
+  /**
+   * Calculates the total price and quantity.
+   * @returns An object with total price and total quantity.
+   */
+  private computeCartTotals(items: CartItem[]): { total: number, quantity: number } {
+    let total = 0;
+    let quantity = 0;
+
+    for (let item of items) {
+      total += item.quantity * item.unitPrice;
+      quantity += item.quantity;
+    }
+    return { total, quantity };
   }
 }
 

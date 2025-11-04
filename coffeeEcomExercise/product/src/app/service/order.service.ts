@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BaseHttpService } from './base-http.service';
 import { HttpClient } from '@angular/common/http';
-import { Order } from '../model/order';
 import { Observable } from 'rxjs';
+import { Order } from '../model/order';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OrderService extends BaseHttpService {
+export class OrderService {
 
-  constructor(protected override http: HttpClient) { 
-    super(http, '/api/orderitems'); 
-  }
+  private orderUrl = 'http://localhost:8080/api/order';
 
-  public placeOrder(order: Order): Observable<any> {
+  constructor(private http: HttpClient) { }
 
-    return this.add(order.orderItems);
+  placeOrder(order: Order): Observable<Order> {
+    return this.http.post<Order>(this.orderUrl, order);
   }
 }
+

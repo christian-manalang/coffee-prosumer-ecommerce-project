@@ -1,35 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CartService } from '../service/cart.service';
 import { CartItem } from '../model/cart-item';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-shopping-cart',
   templateUrl: './shopping-cart.component.html',
   styleUrls: ['./shopping-cart.component.css']
 })
-export class ShoppingCartComponent implements OnInit {
+export class ShoppingCartComponent implements OnInit, OnDestroy {
 
-  cartItems: CartItem[] = [];
-  totalPrice: number = 0;
-  totalQuantity: number = 0;
+  cartItems$!: Observable<CartItem[]>;
+  totalPrice$!: Observable<number>;
+  totalQuantity$!: Observable<number>;
+
+  private cartSub: Subscription = new Subscription();
 
   constructor(private cartService: CartService) { }
 
   ngOnInit(): void {
-    this.listCartDetails();
+    this.cartItems$ = this.cartService.items$;
+    this.totalPrice$ = this.cartService.totalPrice$;
+    this.totalQuantity$ = this.cartService.totalQuantity$;
   }
 
-  listCartDetails() {
-    this.cartItems = this.cartService.getItems();
-
-    this.cartService.totalPrice.subscribe(data => this.totalPrice = data);
-    this.cartService.totalQuantity.subscribe(data => this.totalQuantity = data);
-
-    this.cartService.computeCartTotals();
+  ngOnDestroy(): void {
+    if (this.cartSub) {
+      this.cartSub.unsubscribe();
+    }
   }
 
   incrementQuantity(cartItem: CartItem) {
-    this.cartService.incrementQuantity(cartItem);
+    this.cartService.addToCart(cartItem as any);
   }
 
   decrementQuantity(cartItem: CartItem) {
@@ -37,7 +39,7 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   remove(cartItem: CartItem) {
-    this.cartService.removeItem(cartItem);
+    this.cartService.removeFromCart(cartItem);
   }
 }
 
